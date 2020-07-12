@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer),  typeof(BoxCollider2D))]
 public class Item : MonoBehaviour, Interactable
 {
     public enum ItemType
     {
-        //apple, milk, chicken, etc.
+        Apple, Orange, Chips, Cola, Wine, Cheese
     }
 
-    public ItemType itemType;
+   [SerializeField] public ItemType itemType;
 
-    public Sprite sprite;
 
     public void OnInteract(Player player)
     {
