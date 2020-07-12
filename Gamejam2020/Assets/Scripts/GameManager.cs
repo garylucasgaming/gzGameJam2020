@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] public GameObject WinPanel;
     [SerializeField] public GameObject LosePanel;
+    [SerializeField] public TextMeshProUGUI winLostText;
 
 
 
