@@ -88,7 +88,7 @@ public class Kid : MonoBehaviour, Interactable
         {
             StopCoroutine(demolitionCoroutine);
 
-            if (demolitionTarget.GetComponent<Aisle>().demolished == false) 
+            if (demolitionTarget != null && demolitionTarget.GetComponent<Aisle>().demolished == false) 
             {
                 demolitionTarget.GetComponent<Aisle>().ResetVisuals();
             }

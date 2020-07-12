@@ -10,6 +10,11 @@ public class CashierWinZone : MonoBehaviour
     private bool hasCart = false;
     private bool hasKid = false;
 
+    private void Update()
+    {
+        print("Items found: " + winList.Count);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
       
@@ -84,6 +89,8 @@ public class CashierWinZone : MonoBehaviour
         if(collision.GetComponent<Cart>())
         {
             hasCart = false;
+            winList = new List<bool>();
+
         }
         if(collision.GetComponent<Kid>())
         {
