@@ -59,10 +59,10 @@ public class GameManager : MonoBehaviour
        
         UpdateGroceryList();
         UpdateToggles();
-        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
-        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
-        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
-        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        //AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        //AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        //AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        //AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
 
 
         _TimerText.text = "Timer: 10:00";
@@ -114,28 +114,57 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        var tempList = _collectedItemList;
-        print(tempList[0]);
-        
-        foreach(GameObject groceryItem in _groceryList)
+        List<GameObject> tempList = new List<GameObject>(_collectedItemList.Count);
+
+        foreach (GameObject go in _collectedItemList)
         {
-          
-            int i = 0;
-            foreach(GameObject item in tempList)
-            {
-              
-                if(item.name == groceryItem.name)
-                {
-                    tempList.Remove(item);
-                    _toggleList[i].gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(true);
-                    
-                    
-                }
-               
-            }
-            i++;
+            tempList.Add(go);
         }
-        
+        print("Updating Toggles, here is tempList: ");
+        foreach (var x in tempList)
+        {
+            Debug.Log(x.ToString());
+        }
+
+        for (int i = 0; i < _groceryList.Count; i++)
+        {
+            GameObject groceryItemGO = _groceryList[i];
+
+            for (int j = tempList.Count - 1; j >= 0; j--)
+            {
+                GameObject itemGO = tempList[j];
+
+                if (itemGO.name == groceryItemGO.name)
+                {
+                    tempList.Remove(itemGO);
+                    _toggleList[i].gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(true);
+                    break;
+                }
+            }
+        }
+        //foreach(GameObject groceryItem in _groceryList)
+        //{
+
+        //    int i = 0;
+        //    //foreach(GameObject item in tempList)
+        //    //{
+
+        //    //    if(item.name == groceryItem.name)
+        //    //    {
+        //    //        tempList.Remove(item);
+        //    //        _toggleList[i].gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(true);
+
+
+        //    //    }
+
+        //    //}
+        //    for (int j = 0; j < tempList.Count; j++)
+        //    {
+
+        //    }
+        //    i++;
+        //}
+
 
     }
 
