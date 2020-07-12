@@ -8,16 +8,22 @@ public class Player : MonoBehaviour
     Vector2 directionalInput;
     Collider2D collider;
     Rigidbody2D rigidBody;
+    new public Transform transform;
 
     public Transform handSlot;
     public Interactable availableInteractable;
     public Interactable heldInteractable;
     bool doInteraction;
 
+    private void Awake()
+    {
+        collider = GetComponent<Collider2D>();
+        rigidBody = GetComponent<Rigidbody2D>();
+        transform = GetComponent<Transform>();
+    }
     private void Start()
     {
-        collider  = GetComponent<Collider2D>();
-        rigidBody = GetComponent<Rigidbody2D>();
+        
     }
 
     private void Update()
