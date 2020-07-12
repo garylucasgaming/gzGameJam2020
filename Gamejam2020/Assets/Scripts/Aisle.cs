@@ -6,27 +6,61 @@ public class Aisle : MonoBehaviour
 {
     public bool demolished = false;
 
-    SpriteRenderer spriteRenderer;
     public Color demolitionWarningColor;
+    public Color demolishedColor;
 
     public float demolitionTimeSeconds;
 
-    public Sprite demolishedSprite;
+    public Sprite regularSprite;
+
+    public float itemDeletionRange;
+
+
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void ResetVisuals()
+    {
+        SetColors(Color.white);
+    }
+
+    private void DestroyItemsInRange()
+    {
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, itemDeletionRange);
+
+        foreach(var col in cols)
+        {
+            if (col.gameObject.GetComponent<Item>() != null)
+            {
+                Destroy(col.gameObject);
+            }
+        }
+        
     }
 
     public IEnumerator Demolish()
     {
         //Warn player that the shelf is being demolished
-        spriteRenderer.color = demolitionWarningColor;
+        SetColors(demolitionWarningColor);
 
         yield return new WaitForSeconds(demolitionTimeSeconds);
 
-        spriteRenderer.sprite = demolishedSprite;
-        spriteRenderer.color = Color.white;
+        SetColors(demolishedColor);
+        demolished = true;
+
+        DestroyItemsInRange();
+
         yield return null;
+    }
+
+    public void SetColors(Color color)
+    {
+        var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        foreach (var sr in spriteRenderers)
+        {
+            sr.color = color;
+        }
     }
 }

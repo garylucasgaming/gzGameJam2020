@@ -6,15 +6,15 @@ public class Kid : MonoBehaviour, Interactable
 {
     new Transform transform;
 
-    int chanceToMove = 10;
-    int chanceToDemolish = 1;
+    public int chanceToMove = 10;
+    public int chanceToDemolish = 1;
     public float moveSpeed;
 
     public bool beingHeld = false;
 
-    bool demolishing = false;
-    bool goingToDemolish = false;
-    bool movingToWaypoint = false;
+    [SerializeField] bool demolishing = false;
+    [SerializeField] bool goingToDemolish = false;
+    [SerializeField] bool movingToWaypoint = false;
     public Transform currentWaypoint;
     public float waypointSearchRange = 5f;
     public float waypointDetectionRange = 0.1f;
@@ -37,7 +37,7 @@ public class Kid : MonoBehaviour, Interactable
     {
         if (beingHeld) return;
 
-        if (!movingToWaypoint && !demolishing)
+        if (!movingToWaypoint && !demolishing && !goingToDemolish)
         {
             int randomValue = Random.Range(1, 100);
             print(randomValue);
@@ -83,7 +83,19 @@ public class Kid : MonoBehaviour, Interactable
         movingToWaypoint = false;
         demolishing = false;
         goingToDemolish = false;
-        StopCoroutine(demolitionCoroutine);
+        
+        if (demolitionCoroutine != null)
+        {
+            StopCoroutine(demolitionCoroutine);
+
+            if (demolitionTarget.GetComponent<Aisle>().demolished == false) 
+            {
+                demolitionTarget.GetComponent<Aisle>().ResetVisuals();
+            }
+
+            demolitionTarget = null;
+        }
+
         beingHeld = true;
     }
 
@@ -149,7 +161,8 @@ public class Kid : MonoBehaviour, Interactable
             aisleSearchRange,
             aisleLayerMask);
 
-        if (aisleCol != null)
+        print("Aisle selected to demolish!: " + aisleCol);
+        if (aisleCol != null && aisleCol.GetComponent<Aisle>().demolished == false)
         {
             goingToDemolish = true;
             demolitionTarget = aisleCol;
@@ -172,8 +185,9 @@ public class Kid : MonoBehaviour, Interactable
             demolitionDetectionRange,
             aisleLayerMask);
 
-        if (aisleCol == demolitionTarget)
-        {
+        if (aisleCol != null && aisleCol == demolitionTarget)
+        { 
+            print("Beginning to destroy aisle!");
             demolitionCoroutine = aisleCol.gameObject.GetComponent<Aisle>().Demolish();
             goingToDemolish = false;
             demolishing = true;
