@@ -9,36 +9,69 @@ public class GameManager : MonoBehaviour
 {
 
     [SerializeField] public List<GameObject> _itemList;
-    [SerializeField] private List<GameObject> _groceryList;
+    [SerializeField] public List<GameObject> _groceryList;
     [SerializeField] private int _groceryListSize = 6;
     [SerializeField] private GameObject _groceryListTextObject;
     private TextMeshProUGUI _groceryListText;
-    [SerializeField]private List<GameObject> _toggleList;
-    [SerializeField] public List<GameObject> _collectedItemList;
+    [SerializeField] private TextMeshProUGUI _TimerText;
+    [SerializeField] private Timer GMtimer;
+    [SerializeField]public List<GameObject> _toggleList;
+    [SerializeField] public List<GameObject> _collectedItemList ;
 
     [SerializeField] public List<GameObject> spawnedItemsList;
+
+    [SerializeField] public GameObject WinPanel;
+    [SerializeField] public GameObject LosePanel;
+
+
+
 
     private void Awake()
     {
         _groceryListText = _groceryListTextObject.GetComponent<TextMeshProUGUI>();
-        
+        WinPanel.gameObject.SetActive(false);
+        LosePanel.gameObject.SetActive(false);
     }
 
+  
+
+    private void Update()
+    {
+        UpdateTimerText();
+    }
+
+    private void UpdateTimerText()
+    {
+        if(GMtimer.timer <= 0)
+        {
+            _TimerText.text = "Times Up!";
+            return;
+        }
+        
+        _TimerText.text = "Timer: " + TimeSpan.FromSeconds(GMtimer.timer).ToString(@"mm\:ss");
+    }
 
     private void Start()
     {
 
         
         CreateGroceryList();
-        _collectedItemList = _groceryList;
+       
         UpdateGroceryList();
-
         UpdateToggles();
+        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+        AddToCollectedList(_groceryList[UnityEngine.Random.Range(0, _groceryList.Count)]);
+
+
+        _TimerText.text = "Timer: 10:00";
     }
 
     public void AddToCollectedList(GameObject go)
     {
         _collectedItemList.Add(go);
+        UpdateToggles();
     }
 
     public void RemoveFromCollectedList(GameObject go)
@@ -72,36 +105,35 @@ public class GameManager : MonoBehaviour
 
     public void UpdateToggles()
     {
-        
-        if(_groceryList == null)
-            return;
-
-        if(_collectedItemList == null)
+        if(_collectedItemList.Count == 0)
         {
-            
             foreach(GameObject toggle in _toggleList)
             {
-                print(toggle.name);
                 toggle.gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(false);
             }
             return;
         }
 
+        var tempList = _collectedItemList;
+        print(tempList[0]);
+        
         foreach(GameObject groceryItem in _groceryList)
         {
+          
             int i = 0;
-            foreach(GameObject item in _collectedItemList)
+            foreach(GameObject item in tempList)
             {
-                
+              
                 if(item.name == groceryItem.name)
                 {
+                    tempList.Remove(item);
                     _toggleList[i].gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(true);
                     
+                    
                 }
-                
-                i++;
+               
             }
-
+            i++;
         }
         
 
