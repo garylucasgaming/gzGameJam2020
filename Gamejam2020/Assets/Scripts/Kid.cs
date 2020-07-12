@@ -40,15 +40,15 @@ public class Kid : MonoBehaviour, Interactable
         if (!movingToWaypoint && !demolishing)
         {
             int randomValue = Random.Range(1, 100);
-            print(randomValue);
+            
             if (randomValue <= chanceToDemolish)
             {
-                print("Kid is going to destroy an aisle!");
+               
                 SelectAisleToDemolish();
             }
             else if (randomValue <= chanceToMove)
             {
-                print("Kid has chosen a place to go");
+                
                 SelectWaypoint();
             }
         }
@@ -111,12 +111,12 @@ public class Kid : MonoBehaviour, Interactable
                 aisleLayerMask);
             if (hit.collider != null)
             {
-                print("Something in way");
+                
                 waypointCols.Remove(chosenWaypointCol);
             }
             else
             {
-                print("waypoint chosen");
+                
                 currentWaypoint = chosenWaypointCol.transform;
                 movingToWaypoint = true;
                 break;
