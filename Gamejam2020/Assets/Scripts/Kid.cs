@@ -7,20 +7,29 @@ public class Kid : MonoBehaviour, Interactable
     new Transform transform;
 
     int chanceToMove = 10;
-    int chanceToDestroy = 1;
+    int chanceToDemolish = 1;
     public float moveSpeed;
 
     public bool beingHeld = false;
 
-    bool destroying = false;
+    bool demolishing = false;
+    bool goingToDemolish = false;
     bool movingToWaypoint = false;
     public Transform currentWaypoint;
     public float waypointSearchRange = 5f;
     public float waypointDetectionRange = 0.1f;
+    public float aisleSearchRange = 3f;
+    public float demolitionDetectionRange = 0.2f;
+    public Collider2D demolitionTarget;
+
+    int aisleLayerMask;
+
+    public IEnumerator demolitionCoroutine;
 
     private void Awake()
     {
         transform = GetComponent<Transform>();
+        aisleLayerMask =  1 << LayerMask.NameToLayer("Aisles");
     }
 
 
@@ -28,14 +37,14 @@ public class Kid : MonoBehaviour, Interactable
     {
         if (beingHeld) return;
 
-        if (!movingToWaypoint && !destroying)
+        if (!movingToWaypoint && !demolishing)
         {
             int randomValue = Random.Range(1, 100);
             print(randomValue);
-            if (randomValue <= chanceToDestroy)
+            if (randomValue <= chanceToDemolish)
             {
                 print("Kid is going to destroy an aisle!");
-                //look for a shelf nearby to destroy
+                SelectAisleToDemolish();
             }
             else if (randomValue <= chanceToMove)
             {
@@ -47,9 +56,9 @@ public class Kid : MonoBehaviour, Interactable
         {
             MoveToWaypoint();
         }
-        else if (destroying)
+        else if (goingToDemolish)
         {
-            //do destroying
+            MoveToAisle();
         }
     }
 
@@ -72,7 +81,9 @@ public class Kid : MonoBehaviour, Interactable
         transform.SetParent(player.transform);
         player.heldInteractable = this;
         movingToWaypoint = false;
-        destroying = false;
+        demolishing = false;
+        goingToDemolish = false;
+        StopCoroutine(demolitionCoroutine);
         beingHeld = true;
     }
 
@@ -87,8 +98,6 @@ public class Kid : MonoBehaviour, Interactable
             waypointLayerMask));
 
         if (waypointCols.Count <= 0) return;
-
-        int aisleLayerMask = 1 << LayerMask.NameToLayer("Aisles");
         while (waypointCols.Count > 0)
         {
             Collider2D chosenWaypointCol = waypointCols[Random.Range(0, waypointCols.Count)];
@@ -102,6 +111,7 @@ public class Kid : MonoBehaviour, Interactable
                 aisleLayerMask);
             if (hit.collider != null)
             {
+                print("Something in way");
                 waypointCols.Remove(chosenWaypointCol);
             }
             else
@@ -129,6 +139,45 @@ public class Kid : MonoBehaviour, Interactable
             < waypointDetectionRange)
         {
             movingToWaypoint = false;
+        }
+    }
+
+    private void SelectAisleToDemolish()
+    {
+        Collider2D aisleCol = Physics2D.OverlapCircle(
+            transform.position,
+            aisleSearchRange,
+            aisleLayerMask);
+
+        if (aisleCol != null)
+        {
+            goingToDemolish = true;
+            demolitionTarget = aisleCol;
+        }
+    }
+
+    private void MoveToAisle()
+    {
+        transform.position = Vector2.MoveTowards(
+            transform.position,
+            demolitionTarget.transform.position,
+            moveSpeed * Time.deltaTime);
+        CheckDistanceToAisle();
+    }
+
+    private void CheckDistanceToAisle()
+    {
+        Collider2D aisleCol = Physics2D.OverlapCircle(
+            transform.position,
+            demolitionDetectionRange,
+            aisleLayerMask);
+
+        if (aisleCol == demolitionTarget)
+        {
+            demolitionCoroutine = aisleCol.gameObject.GetComponent<Aisle>().Demolish();
+            goingToDemolish = false;
+            demolishing = true;
+            StartCoroutine(demolitionCoroutine);
         }
     }
 }

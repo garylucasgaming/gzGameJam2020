@@ -106,10 +106,9 @@ public class Player : MonoBehaviour
 
         if (heldInteractable is Kid)
         {
-            ((Kid)heldInteractable).beingHeld = true;
+            ((Kid)heldInteractable).beingHeld = false;
         }
 
         heldInteractable = null;
-
     }
 }
