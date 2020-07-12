@@ -64,24 +64,19 @@ public class Player : MonoBehaviour
             //Drop held interactable
             ((MonoBehaviour)heldInteractable).transform.SetParent(null);
 
-            Collider2D[] colliders = ((MonoBehaviour)heldInteractable).GetComponents<Collider2D>();
-
-            foreach (Collider2D col in colliders)
-            {
-                col.enabled = true;
-            }
-
-            heldInteractable = null;
+            DropHeldInteractable();
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        if (collision.tag == "Waypoint") return;
         availableInteractable = collision.GetComponent<Interactable>();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (collision.tag == "Waypoint") return;
         availableInteractable = null;
     }
 
@@ -98,4 +93,23 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void DropHeldInteractable()
+    {
+        ((MonoBehaviour)heldInteractable).transform.SetParent(null);
+
+        Collider2D[] colliders = ((MonoBehaviour)heldInteractable).GetComponents<Collider2D>();
+
+        foreach (Collider2D col in colliders)
+        {
+            col.enabled = true;
+        }
+
+        if (heldInteractable is Kid)
+        {
+            ((Kid)heldInteractable).beingHeld = true;
+        }
+
+        heldInteractable = null;
+
+    }
 }

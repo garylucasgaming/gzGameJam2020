@@ -19,7 +19,6 @@ public class Cart : MonoBehaviour, Interactable
         { 
             Item playerHeldItem = (Item)player.heldInteractable;
             gameManager.AddToCollectedList(playerHeldItem.gameObject);
-            gameManager.UpdateToggles();
 
             playerHeldItem.transform.position = this.transform.position;
             playerHeldItem.transform.SetParent(this.transform);
@@ -38,7 +37,7 @@ public class Cart : MonoBehaviour, Interactable
             //player drop interactable (kid / item not on list / other cart?)
             if (player.heldInteractable != null)
             {
-                ((MonoBehaviour)player.heldInteractable).transform.SetParent(null);
+                player.DropHeldInteractable();
             }
 
             //drive cart

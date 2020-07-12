@@ -21,11 +21,10 @@ public class Item : MonoBehaviour, Interactable
 
     public void OnInteract(Player player)
     {
-        print("Interacting with item");
         if (player.heldInteractable != null)
         {
             //drop heldInteractable
-            ((MonoBehaviour)player.heldInteractable).transform.SetParent(null);
+            player.DropHeldInteractable();
         }
 
         //pickup item
