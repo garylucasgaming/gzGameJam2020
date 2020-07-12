@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
 
         
         CreateGroceryList();
-        _collectedItemList = _groceryList;
         UpdateGroceryList();
 
         UpdateToggles();
@@ -53,8 +52,6 @@ public class GameManager : MonoBehaviour
         {
             _collectedItemList.Remove(go);
         }
-           
-
     }
 
 
@@ -76,7 +73,7 @@ public class GameManager : MonoBehaviour
         if(_groceryList == null)
             return;
 
-        if(_collectedItemList == null)
+        if (_collectedItemList.Count == 0)
         {
             
             foreach(GameObject toggle in _toggleList)
@@ -93,7 +90,7 @@ public class GameManager : MonoBehaviour
             foreach(GameObject item in _collectedItemList)
             {
                 
-                if(item.name == groceryItem.name)
+                if(item.GetComponent<Item>().itemType == groceryItem.GetComponent<Item>().itemType)
                 {
                     _toggleList[i].gameObject.transform.Find("Background").transform.Find("Checkmark").gameObject.SetActive(true);
                     

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour
     {
         GetInput();
         HandleInput();
+        //print($"HeldInteractable: {heldInteractable} \nAvailableInteractable: {availableInteractable}");
     }
 
     void GetInput()
@@ -43,6 +45,7 @@ public class Player : MonoBehaviour
     {
         HandleMovement();
         if (doInteraction) HandleInteraction();
+        UpdateHandSlot();
     }
 
     void HandleMovement()
@@ -56,15 +59,43 @@ public class Player : MonoBehaviour
         {
             availableInteractable.OnInteract(this);
         }
-        else
+        else if (heldInteractable != null)
         {
-            //drop held interactable?
+            //Drop held interactable
+            ((MonoBehaviour)heldInteractable).transform.SetParent(null);
+
+            Collider2D[] colliders = ((MonoBehaviour)heldInteractable).GetComponents<Collider2D>();
+
+            foreach (Collider2D col in colliders)
+            {
+                col.enabled = true;
+            }
+
+            heldInteractable = null;
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         availableInteractable = collision.GetComponent<Interactable>();
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        availableInteractable = null;
+    }
+
+    private void UpdateHandSlot()
+    {
+        if (directionalInput.y == 1f && handSlot.localPosition.y < 0 
+            || directionalInput.y == -1f && handSlot.localPosition.y > 0)
+        {
+            handSlot.localPosition = -handSlot.localPosition;
+        }
+        if (heldInteractable != null)
+        {
+            ((MonoBehaviour)heldInteractable).transform.position = handSlot.position;
+        }
     }
 
 }
